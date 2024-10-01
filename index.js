@@ -16,7 +16,7 @@ app.use(express.static("dist"))
 
 
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:"https://jewelery-clone.onrender.com",
     credentials:true
 }))
 app.use(cookieparser())
