@@ -5,8 +5,7 @@ const path = require("path")
 const cookieparser = require("cookie-parser")
 const { adminProtected } = require("./middlewares/admin.protected")
 const { userProtected } = require("./middlewares/userProtected")
-// const Razorpay = require("razorpay")
-// const { default: UserProtected } = require("../client/src/share/UserProtected")
+
 require("dotenv").config()
 
 
@@ -17,8 +16,8 @@ app.use(express.static("dist"))
 
 
 app.use(cors({
-    origin:"https://jewelery-clone.onrender.com",
-    // origin:"http://localhost:5173",
+    // origin:"https://jewelery-clone.onrender.com",
+    origin:"http://localhost:5173",
     credentials:true
 }))
 app.use(cookieparser())
