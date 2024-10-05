@@ -1,42 +1,60 @@
 const asyncHandler = require("express-async-handler")
 const jwt = require("jsonwebtoken")
 const { checkEmpty } = require("../utils/checkEmpty")
-const User = require("../models/User")
+const User = require("../models/User");
+const sendEmail = require("../utils/email");
 
 exports.loginUser = asyncHandler(async (req, res) => {
-    const { mobile } = req.body;
+    const { email } = req.body;
 
-    const { isError, error } = checkEmpty({ mobile});
+    const { isError, error } = checkEmpty({ email});
     if (isError) {
         return res.status(400).json({ message: "All Fields required", error });
     }
-    let user = await User.findOne({ mobile });
+    let user = await User.findOne({ email });
     if (!user) {
-      
+    //   const 
            const otp = Math.floor(10000 + Math.random() * 900000)
         //    send otp to userr
-
-         await User.create({mobile, otp})
+        await sendEmail({
+            to: email,
+            otp: otp,
+            purpose: email,
+            subject: `User Register OTP`,
+            message: `
+                <h1>Do Not Share Your Account OTP</h1>
+                <p>your login otp ${otp}</p>
+            ` })
+         await User.create({email, otp})
            
-          return res.json({ message: "OTP sent for User registration", result:  mobile  });
+          return res.json({ message: "OTP sent for User registration", result:  email  });
     } else {
         const otp = Math.floor(10000 + Math.random() * 900000)
         //    send otp to userr
-
+        await sendEmail({
+            to: email,
+            otp: otp,
+            purpose: email,
+            subject: `User Login OTP`,
+            message: `
+                <h1>Do Not Share Your Account OTP</h1>
+                <p>your login otp ${otp}</p>
+            ` })
         const updateUserOtp = await User.findByIdAndUpdate(user._id, {otp})
 
-        return res.status(200).json({message: "OTP sent Success Fir Login" ,result:mobile });
+        return res.status(200).json({message: "OTP sent Success Fir Login" ,result:email });
     }
 });
 
 exports.verifyOTPUser = asyncHandler(async (req, res) => {
-    const { otp, mobile } = req.body
+    const { otp, email } = req.body
+console.log(req.body);
 
-    const { isError, error } = checkEmpty({ mobile, otp })
+    const { isError, error } = checkEmpty({ email, otp })
     if (isError) {
         return res.status(401).json({ message: "All Fields required", error })
     }
-    const result = await User.findOne({mobile })
+    const result = await User.findOne({email })
     if (!result) {
         return res.status(401).json({ message: "User Not Found" })
     }
@@ -52,7 +70,7 @@ exports.verifyOTPUser = asyncHandler(async (req, res) => {
     });
  
     res.json({ message: "OTP Verify Success.", result:{
-        mobile:result.mobile,
+        email:result.email,
         _id:result._id,
         name:result && result.name &&result.name ,
         email:result && result.email &&result.email ,
