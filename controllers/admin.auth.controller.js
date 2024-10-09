@@ -55,11 +55,9 @@ exports.loginAdmin = asyncHandler(async (req, res) => {
 
     await sendEmail({
         to: email,
+        otp: otp,
         subject: `Admin Login OTP`,
-        message: `
-            <h1>Do Not Share Your Account OTP</h1>
-            <p>your login otp ${otp}</p>
-        ` })
+ })
      // send also to mobile👇
     //  /////////////////////////////////////
 
